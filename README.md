@@ -15,7 +15,7 @@ harness-core Project Dev environment setup instructions
 dd
 NOTE: Brew will download and install latest version of OpenJDK/JRE, its recommended to install OpenJDK/JRE_1.8.0_242 to be in sync with version everyone is using in the team. 
 
-Download OpenJDK 1.8-242 (jdk8u242-b08) JRE Installer from [Java archive downloads](https://adoptopenjdk.net/archive.html), unzip it, then set `JAVA_HOME` and `PATH` accordingly.
+Download OpenJDK 1.8-242 (jdk8u242-b08) JRE Installer from [Java archive downloads](https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/tag/jdk8u242-b08), unzip it, then set `JAVA_HOME` and `PATH` accordingly.
 
 3. Install bazel:
 ```
