@@ -34,6 +34,9 @@ public class SCMExceptionHandler implements ExceptionHandler {
       return NestedExceptionUtils.hintWithExplanationException(HintException.HINT_INVALID_GIT_API_AUTHORIZATION,
           ExplanationException.INVALID_GIT_API_AUTHORIZATION,
           new InvalidRequestException(exception.getMessage(), USER));
+    } else if (errorCode == ErrorCode.INVALID_REQUEST) {
+      return NestedExceptionUtils.hintWithExplanationException("Something went wrong with SCM",
+          "SCM is not running with delegate agent", new InvalidRequestException(exception.getMessage(), USER));
     }
     return new InvalidRequestException(exception.getMessage(), USER);
   }
