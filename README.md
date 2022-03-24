@@ -45,7 +45,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/H
 Complete this step only if you are actively working with the protocol buffer files.
 ```
 brew tap bufbuild/buf
-brew install buf
+brew install bufsdcds
 ```
 
 To check if your protobuf files are according to the coding standards execute in the root of the repo
