@@ -3,7 +3,7 @@ This repo contains code used in the [Harness CD Community Edition](https://githu
 harness-core Project Dev environment setup instructions
 ==================================================
 ## On MacOS
-
+ 
 ### Prerequisities
 1. Install Homebrew:
 ```
