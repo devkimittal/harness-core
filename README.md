@@ -252,7 +252,7 @@ echo "export PATH="$PATH:$HOME/<path-to-above-directory>/bin" >> ~/.zshrc
 to format .graphql files: you can follow these steps:
 
 * `npm install --global prettier@1.19.1`
-
+csdvdf
 * `prettier --write --print-width=120 <filename>` - formats given graphql file
 
 helper shell scripts:
