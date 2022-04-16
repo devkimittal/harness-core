@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toSet;
 
 import io.harness.annotations.dev.OwnedBy;
 import io.harness.cache.CacheConfig;
-import io.harness.debezium.DebeziumConfig;
 import io.harness.enforcement.client.EnforcementClientConfiguration;
 import io.harness.event.OrchestrationLogConfiguration;
 import io.harness.eventsframework.EventsFrameworkConfiguration;
@@ -65,6 +64,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
+// Todo: Streamline this
 @OwnedBy(PIPELINE)
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -122,8 +122,10 @@ public class PipelineServiceConfiguration extends Configuration {
   @JsonProperty("pipelineSdkRedisEventsConfig") private PipelineSdkRedisEventsConfig pipelineSdkRedisEventsConfig;
   @JsonProperty("orchestrationRedisEventsConfig") private OrchestrationRedisEventsConfig orchestrationRedisEventsConfig;
   @JsonProperty("allowedParallelStages") private int allowedParallelStages;
-  @JsonProperty("debeziumConfig") private DebeziumConfig debeziumConfig;
   @JsonProperty("orchestrationLogConfiguration") private OrchestrationLogConfiguration orchestrationLogConfiguration;
+  @JsonProperty("planCreatorMergeServiceDependencyBatch") private Integer planCreatorMergeServiceDependencyBatch;
+  @JsonProperty("jsonExpansionPoolConfig") private ThreadPoolConfig jsonExpansionPoolConfig;
+  @JsonProperty("jsonExpansionRequestBatchSize") private Integer jsonExpansionBatchSize;
 
   private String managerServiceSecret;
   private String managerTarget;

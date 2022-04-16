@@ -36,6 +36,7 @@ public final class EventsFrameworkConstants {
   public static final String INSTANCE_STATS = "instance_stats";
   public static final String GIT_FULL_SYNC_STREAM = "full_sync_stream";
   public static final String OBSERVER_EVENT_CHANNEL = "observer_event_channel";
+  public static final String GIT_SYNC_ENTITY_STREAM = "git_sync_entity_stream";
 
   // created for git sdk, dont use outside sdk.
   public static final String GIT_CONFIG_STREAM = "git_config_stream";
@@ -85,6 +86,11 @@ public final class EventsFrameworkConstants {
   public static final String PIPELINE_NODE_RESUME_EVENT_TOPIC = "pipeline_node_resume";
   public static final int PIPELINE_NODE_RESUME_BATCH_SIZE = 20;
   public static final int PIPELINE_NODE_RESUME_MAX_TOPIC_SIZE = 5000;
+  public static final String PIPELINE_EXECUTION_SUMMARY_REDIS_EVENT_CONSUMER_CD =
+      "PIPELINE_EXECUTION_SUMMARY_REDIS_EVENT_CONSUMER_CD";
+  public static final String PIPELINE_EXECUTION_SUMMARY_CD_REDIS_KEY =
+      "DEBEZIUM_pmsMongo.pms-harness.planExecutionsSummary";
+  public static final String PIPELINE_EXECUTION_SUMMARY_CD_CONSUMER = "PIPELINE_EXECUTION_SUMMARY_CD_CONSUMER";
 
   public static final String START_PARTIAL_PLAN_CREATOR_EVENT_TOPIC = "pipeline_start_plan";
   public static final int START_PARTIAL_PLAN_CREATOR_BATCH_SIZE = 20;

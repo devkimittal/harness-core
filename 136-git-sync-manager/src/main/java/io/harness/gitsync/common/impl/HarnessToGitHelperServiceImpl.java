@@ -17,10 +17,12 @@ import io.harness.common.EntityReference;
 import io.harness.connector.ConnectorResponseDTO;
 import io.harness.connector.helper.EncryptionHelper;
 import io.harness.connector.services.ConnectorService;
+import io.harness.delegate.beans.connector.ConnectorType;
 import io.harness.delegate.beans.connector.scm.ScmConnector;
 import io.harness.delegate.beans.git.YamlGitConfigDTO;
 import io.harness.eventsframework.schemas.entity.EntityDetailProtoDTO;
 import io.harness.eventsframework.schemas.entity.EntityScopeInfo;
+import io.harness.exception.ExceptionUtils;
 import io.harness.exception.InvalidRequestException;
 import io.harness.exception.UnexpectedException;
 import io.harness.gitsync.BranchDetails;
@@ -42,6 +44,7 @@ import io.harness.gitsync.common.service.GitEntityService;
 import io.harness.gitsync.common.service.HarnessToGitHelperService;
 import io.harness.gitsync.common.service.ScmOrchestratorService;
 import io.harness.gitsync.common.service.YamlGitConfigService;
+import io.harness.gitsync.common.utils.GitSyncFilePathUtils;
 import io.harness.gitsync.core.beans.GitCommit.GitCommitProcessingStatus;
 import io.harness.gitsync.core.dtos.GitCommitDTO;
 import io.harness.gitsync.core.fullsync.entity.GitFullSyncJob;
@@ -65,6 +68,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -169,7 +173,7 @@ public class HarnessToGitHelperServiceImpl implements HarnessToGitHelperService 
               -> gitBranchSyncService.createBranchSyncEvent(yamlGitConfigDTO.getAccountIdentifier(),
                   yamlGitConfigDTO.getOrganizationIdentifier(), yamlGitConfigDTO.getProjectIdentifier(),
                   yamlGitConfigDTO.getIdentifier(), yamlGitConfigDTO.getRepo(), pushInfo.getBranchName(),
-                  ScmGitUtils.createFilePath(pushInfo.getFolderPath(), pushInfo.getFilePath())));
+                  Arrays.asList(ScmGitUtils.createFilePath(pushInfo.getFolderPath(), pushInfo.getFilePath()))));
     }
   }
 
@@ -178,7 +182,7 @@ public class HarnessToGitHelperServiceImpl implements HarnessToGitHelperService 
   }
 
   private void resolveGitToHarnessErrors(PushInfo pushInfo, YamlGitConfigDTO yamlGitConfigDTO) {
-    String completeFilePath = ScmGitUtils.createFilePath(pushInfo.getFolderPath(), pushInfo.getFilePath());
+    String completeFilePath = GitSyncFilePathUtils.createFilePath(pushInfo.getFolderPath(), pushInfo.getFilePath());
     gitSyncErrorService.resolveGitToHarnessErrors(pushInfo.getAccountId(), yamlGitConfigDTO.getRepo(),
         pushInfo.getBranchName(), new HashSet<>(Collections.singleton(completeFilePath)), pushInfo.getCommitId());
   }
@@ -229,12 +233,15 @@ public class HarnessToGitHelperServiceImpl implements HarnessToGitHelperService 
 
   @Override
   public BranchDetails getBranchDetails(RepoDetails repoDetails) {
-    final YamlGitConfigDTO yamlGitConfigDTO = yamlGitConfigService.get(repoDetails.getProjectIdentifier().getValue(),
-        repoDetails.getOrgIdentifier().getValue(), repoDetails.getAccountId(), repoDetails.getYamlGitConfigId());
-    if (yamlGitConfigDTO == null) {
-      return BranchDetails.newBuilder().build();
+    try {
+      final YamlGitConfigDTO yamlGitConfigDTO = yamlGitConfigService.get(repoDetails.getProjectIdentifier().getValue(),
+          repoDetails.getOrgIdentifier().getValue(), repoDetails.getAccountId(), repoDetails.getYamlGitConfigId());
+      return BranchDetails.newBuilder().setDefaultBranch(yamlGitConfigDTO.getBranch()).build();
+    } catch (InvalidRequestException ex) {
+      log.error("Error while getting yamlGitConfig", ex);
+      String errorMessage = ExceptionUtils.getMessage(ex);
+      return BranchDetails.newBuilder().setError(errorMessage).build();
     }
-    return BranchDetails.newBuilder().setDefaultBranch(yamlGitConfigDTO.getBranch()).build();
   }
 
   @Override
@@ -338,7 +345,7 @@ public class HarnessToGitHelperServiceImpl implements HarnessToGitHelperService 
         .oldFileSha(StringValueUtils.getStringFromStringValue(request.getOldFileSha()))
         .yaml(request.getYaml())
         .scmConnector(connectorConfig)
-        .commitId(fetchLastCommitIdForFile(request, entityDetailDTO))
+        .commitId(fetchLastCommitIdForFile(request, entityDetailDTO, connectorConfig))
         .build();
   }
 
@@ -354,5 +361,15 @@ public class HarnessToGitHelperServiceImpl implements HarnessToGitHelperService 
       lastCommitIdForFile = gitSyncEntityDTO.getLastCommitId();
     }
     return lastCommitIdForFile;
+  }
+
+  private String fetchLastCommitIdForFile(
+      FileInfo request, EntityDetail entityDetailDTO, ScmConnector connectorConfig) {
+    // Perform fetch commit id ops for only bitbucket for now
+    if (ConnectorType.BITBUCKET.equals(connectorConfig.getConnectorType())) {
+      return fetchLastCommitIdForFile(request, entityDetailDTO);
+    }
+    // Return dummy commit id in other cases, will not be used anywhere
+    return "";
   }
 }

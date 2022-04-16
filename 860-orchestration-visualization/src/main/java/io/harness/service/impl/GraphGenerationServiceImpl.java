@@ -29,6 +29,7 @@ import io.harness.event.OrchestrationLogPublisher;
 import io.harness.event.PlanExecutionStatusUpdateEventHandler;
 import io.harness.event.StepDetailsUpdateEventHandler;
 import io.harness.exception.InvalidRequestException;
+import io.harness.exception.NestedExceptionUtils;
 import io.harness.execution.NodeExecution;
 import io.harness.execution.PlanExecution;
 import io.harness.generator.OrchestrationAdjacencyListGenerator;
@@ -36,6 +37,7 @@ import io.harness.lock.AcquiredLock;
 import io.harness.lock.PersistentLocker;
 import io.harness.plan.NodeType;
 import io.harness.pms.contracts.execution.events.OrchestrationEventType;
+import io.harness.pms.contracts.steps.StepCategory;
 import io.harness.pms.execution.utils.StatusUtils;
 import io.harness.pms.plan.execution.ExecutionSummaryUpdateUtils;
 import io.harness.pms.plan.execution.service.PmsExecutionSummaryService;
@@ -46,14 +48,12 @@ import io.harness.skip.service.VertexSkipperService;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.query.Update;
 
@@ -65,7 +65,6 @@ public class GraphGenerationServiceImpl implements GraphGenerationService {
   private static final String GRAPH_LOCK = "GRAPH_LOCK_";
 
   @Inject private PlanExecutionService planExecutionService;
-  @Inject @Named("orchestrationLogCache") Cache<String, Long> orchestrationLogCache;
   @Inject private NodeExecutionService nodeExecutionService;
   @Inject private SpringMongoStore mongoStore;
   @Inject private OrchestrationAdjacencyListGenerator orchestrationAdjacencyListGenerator;
@@ -230,13 +229,17 @@ public class GraphGenerationServiceImpl implements GraphGenerationService {
     }
     String startingNodeId =
         obtainStartingIdFromSetupNodeId(orchestrationGraph.getAdjacencyList().getGraphVertexMap(), startingSetupNodeId);
-    return generatePartialGraph(startingNodeId, orchestrationGraph);
+    try {
+      return generatePartialGraph(startingNodeId, orchestrationGraph);
+    } catch (Exception ex) {
+      orchestrationGraph = buildOrchestrationGraph(planExecutionId);
+      return generatePartialGraph(startingNodeId, orchestrationGraph);
+    }
   }
 
   private void sendUpdateEventIfAny(OrchestrationGraph orchestrationGraph) {
     String planExecutionId = orchestrationGraph.getPlanExecutionId();
-    if (orchestrationLogCache.containsKey(planExecutionId) && orchestrationLogCache.get(planExecutionId) > 0) {
-      orchestrationLogCache.put(planExecutionId, 0L);
+    if (!StatusUtils.isFinalStatus(orchestrationGraph.getStatus())) {
       orchestrationLogPublisher.sendLogEvent(planExecutionId);
     }
   }
@@ -245,6 +248,12 @@ public class GraphGenerationServiceImpl implements GraphGenerationService {
     log.warn(String.format(
         "[GRAPH_ERROR]: Trying to build orchestration graph from scratch for planExecutionId [%s]", planExecutionId));
     PlanExecution planExecution = planExecutionService.get(planExecutionId);
+    if (planExecution == null) {
+      throw NestedExceptionUtils.hintWithExplanationException("Pipeline Execution with given plan execution id: ["
+              + planExecutionId + "] not found or unable to generate a graph for it",
+          "Try to open an execution which is not 6 months old. If issue persists, please contact harness support",
+          new InvalidRequestException("Graph could not be generated for planExecutionId [" + planExecutionId + "]."));
+    }
     List<NodeExecution> nodeExecutions = nodeExecutionService.fetchNodeExecutionsWithoutOldRetries(planExecutionId);
     if (isEmpty(nodeExecutions)) {
       throw new InvalidRequestException("No nodes found for planExecutionId [" + planExecutionId + "]");
@@ -265,7 +274,12 @@ public class GraphGenerationServiceImpl implements GraphGenerationService {
             .adjacencyList(orchestrationAdjacencyListGenerator.generateAdjacencyList(rootNodeId, nodeExecutions, true))
             .build();
 
+    List<NodeExecution> stageNodeExecutions =
+        nodeExecutions.stream()
+            .filter(nodeExecution -> nodeExecution.getStepType().getStepCategory() == StepCategory.STAGE)
+            .collect(Collectors.toList());
     cacheOrchestrationGraph(graph);
+    pmsExecutionSummaryService.regenerateStageLayoutGraph(planExecutionId, stageNodeExecutions);
     return graph;
   }
 
@@ -300,25 +314,6 @@ public class GraphGenerationServiceImpl implements GraphGenerationService {
       throw new InvalidRequestException(
           "Repeated setupNodeIds are not supported. Check the plan for [" + startingSetupNodeId + "] planNodeId");
     }
-  }
-
-  private String obtainStartingIdFromIdentifier(Map<String, GraphVertex> graphVertexMap, String identifier) {
-    return graphVertexMap.values()
-        .stream()
-        .filter(vertex -> vertex.getIdentifier().equals(identifier))
-        .collect(Collectors.collectingAndThen(Collectors.toList(),
-            list -> {
-              if (list.isEmpty()) {
-                throw new InvalidRequestException("No nodes found for identifier [" + identifier + "]");
-              }
-              if (list.size() > 1) {
-                throw new InvalidRequestException(
-                    "Repeated identifiers are not supported. Check the plan for [" + identifier + "] identifier");
-              }
-
-              return list.get(0);
-            }))
-        .getUuid();
   }
 
   private String obtainStartingNodeExId(List<NodeExecution> nodeExecutions) {

@@ -13,7 +13,7 @@ vfgvfg
 
    To setup the recommended version, download the OpenJDK 1.8-242 (jdk8u242-b08) JRE .pkg from [AdoptOpenJDK](https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/tag/jdk8u242-b08) and install it. Make sure to update `JAVA_HOME` and `PATH` accordingly (see step 5).
 
-3. Install bazel:
+3. Install bazel:fvvdfv
 ```
 brew install bazelisk
 
@@ -199,7 +199,7 @@ cd to `harness-core` directory
 
 3. Start Delegate
 
-   * `java -Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:mygclogfilename.gc -XX:+UseParallelGC -XX:MaxGCPauseMillis=500 -jar ~/.bazel-dirs/bin/260-delegate/module_deploy.jar 260-delegate/config-delegate.yml &`
+   * `java -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:mygclogfilename.gc -XX:+UseParallelGC -XX:MaxGCPauseMillis=500 -jar ~/.bazel-dirs/bin/260-delegate/module_deploy.jar 260-delegate/config-delegate.yml &`
 
 4. Start Verification service (Optional)
 
@@ -248,7 +248,7 @@ echo "export PATH="$PATH:$HOME/<path-to-above-directory>/bin" >> ~/.zshrc
 to format .graphql files: you can follow these steps:
 
 * `npm install --global prettier@1.19.1`
-
+csdvdf
 * `prettier --write --print-width=120 <filename>` - formats given graphql file
 
 helper shell scripts:
@@ -260,7 +260,9 @@ helper shell scripts:
 ### IntelliJ Setup
 
 1. Install IntelliJ
-   
+  
+   NOTE: Download IntelliJ as per your macOS architecture i.e. x86_64 (intel) or arm64 (Apple silicon). You can check your architecture by command “uname -m“.
+  
    It's recommended to install the latest version of IntelliJ that's supported by the Bazel Plugin. To find the latest supported version, please refer to the [bazel github project](https://github.com/bazelbuild/intellij/blob/master/intellij_platform_sdk/build_defs.bzl#L11).
 
    After identifying the desired version of IntelliJ, you can download it from [jetbrains.com](https://www.jetbrains.com/idea/download/other.html).
@@ -330,6 +332,7 @@ While running an app from pre checked in configs, Add JAVA_HOME as an environmen
 ### Show current git branch in command prompt
 
 If you are using zsh (which is default on MacOS Catalina and later), basic git integration comes out of the box.
+  
 
 If you are using bash, add the following to your `~/.bash_profile` to display the current git branch in the command prompt:
 

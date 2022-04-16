@@ -9,6 +9,8 @@ package io.harness.ngmigration.service;
 
 import static io.harness.data.structure.EmptyPredicate.isEmpty;
 import static io.harness.data.structure.EmptyPredicate.isNotEmpty;
+import static io.harness.ngmigration.utils.NGMigrationConstants.VIZ_FILE_NAME;
+import static io.harness.ngmigration.utils.NGMigrationConstants.VIZ_TEMP_DIR_PREFIX;
 
 import io.harness.annotations.dev.HarnessTeam;
 import io.harness.annotations.dev.OwnedBy;
@@ -23,6 +25,7 @@ import io.harness.ngmigration.beans.MigrationInputResult;
 import io.harness.ngmigration.beans.NgEntityDetail;
 import io.harness.ngmigration.client.NGClient;
 import io.harness.ngmigration.client.PmsClient;
+import io.harness.ngmigration.utils.NGMigrationConstants;
 import io.harness.remote.client.ServiceHttpClientConfig;
 
 import software.wings.ngmigration.CgEntityId;
@@ -47,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,14 +67,13 @@ import javax.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Slf4j
 @OwnedBy(HarnessTeam.CDC)
 public class DiscoveryService {
-  private static final String DEFAULT_ZIP_DIRECTORY = "/tmp/zip-output";
-
   @Inject private NgMigrationFactory migrationFactory;
   @Inject private MigratorMappingService migratorMappingService;
   @Inject @Named("ngClientConfig") private ServiceHttpClientConfig ngClientConfig;
@@ -144,8 +147,24 @@ public class DiscoveryService {
     return DiscoveryResult.builder().entities(entities).links(graph).root(head.getEntityNode().getEntityId()).build();
   }
 
+  public StreamingOutput discoverImg(String accountId, String appId, String entityId, NGMigrationEntityType entityType)
+      throws IOException {
+    Path path = Files.createTempDirectory(VIZ_TEMP_DIR_PREFIX);
+    String imgPath = path.toFile().getAbsolutePath() + VIZ_FILE_NAME;
+    discover(accountId, appId, entityId, entityType, imgPath);
+    return output -> {
+      try {
+        byte[] data = Files.readAllBytes(Paths.get(imgPath));
+        output.write(data);
+        output.flush();
+      } catch (Exception e) {
+        throw new IllegalStateException("Could not export viz output file");
+      }
+    };
+  }
+
   public DiscoveryResult discover(
-      String accountId, String appId, String entityId, NGMigrationEntityType entityType, boolean shouldExportImg) {
+      String accountId, String appId, String entityId, NGMigrationEntityType entityType, String filePath) {
     if (NGMigrationEntityType.APPLICATION.equals(entityType)) {
       // ensure that appId & entityId are same if we are tying to migrate an app.
       appId = entityId;
@@ -159,19 +178,24 @@ public class DiscoveryService {
       throw new IllegalStateException("Root cannot be found!");
     }
     travel(accountId, appId, entities, graph, null, node);
-    if (shouldExportImg) {
-      exportImg(entities, graph);
+    if (StringUtils.isNotBlank(filePath)) {
+      exportImg(entities, graph, filePath);
     }
     return DiscoveryResult.builder().entities(entities).links(graph).root(node.getEntityNode().getEntityId()).build();
   }
 
-  private void exportImg(Map<CgEntityId, CgEntityNode> entities, Map<CgEntityId, Set<CgEntityId>> graph) {
+  private void exportImg(
+      Map<CgEntityId, CgEntityNode> entities, Map<CgEntityId, Set<CgEntityId>> graph, String filePath) {
     MutableGraph vizGraph = getGraphViz(entities, graph);
     try {
-      Graphviz.fromGraph(vizGraph).render(Format.PNG).toFile(new File("/tmp/viz-output/viz.png"));
+      Graphviz.fromGraph(vizGraph).render(Format.PNG).toFile(new File(filePath));
     } catch (IOException e) {
       log.warn("Unable to write visualization to file");
     }
+  }
+
+  private void exportImg(Map<CgEntityId, CgEntityNode> entities, Map<CgEntityId, Set<CgEntityId>> graph) {
+    exportImg(entities, graph, NGMigrationConstants.DISCOVERY_IMAGE_PATH);
   }
 
   public MigrationInputResult migrationInput(DiscoveryResult result) {
@@ -194,7 +218,7 @@ public class DiscoveryService {
     exportZip(ngYamlFiles, folder);
     return output -> {
       try {
-        byte[] data = Files.readAllBytes(Paths.get(folder + "/yamls.zip"));
+        byte[] data = Files.readAllBytes(Paths.get(folder + NGMigrationConstants.ZIP_FILE_PATH));
         output.write(data);
         output.flush();
       } catch (Exception e) {
@@ -214,7 +238,7 @@ public class DiscoveryService {
   public List<NGYamlFile> migrateEntity(
       String auth, MigrationInputDTO inputDTO, DiscoveryResult discoveryResult, boolean dryRun) {
     List<NGYamlFile> ngYamlFiles = migrateEntity(inputDTO, discoveryResult);
-    exportZip(ngYamlFiles, DEFAULT_ZIP_DIRECTORY);
+    exportZip(ngYamlFiles, NGMigrationConstants.DEFAULT_ZIP_DIRECTORY);
     if (!dryRun) {
       createEntities(auth, inputDTO, ngYamlFiles);
     }
@@ -261,7 +285,7 @@ public class DiscoveryService {
     } catch (IOException e) {
       log.warn("Failed to clean output directory");
     }
-    File zipFile = new File(dirName + "/yamls.zip");
+    File zipFile = new File(dirName + NGMigrationConstants.ZIP_FILE_PATH);
     zipFile.getParentFile().mkdirs();
     try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile))) {
       for (NGYamlFile file : ngYamlFiles) {

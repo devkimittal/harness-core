@@ -14,9 +14,11 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 import io.harness.cvng.activity.entities.DeploymentActivity;
 import io.harness.cvng.activity.entities.DeploymentActivity.DeploymentActivityBuilder;
+import io.harness.cvng.activity.entities.HarnessCDCurrentGenActivity;
+import io.harness.cvng.activity.entities.HarnessCDCurrentGenActivity.HarnessCDCurrentGenActivityBuilder;
 import io.harness.cvng.activity.entities.KubernetesClusterActivity;
 import io.harness.cvng.activity.entities.KubernetesClusterActivity.KubernetesClusterActivityBuilder;
-import io.harness.cvng.activity.entities.KubernetesClusterActivity.ServiceEnvironment;
+import io.harness.cvng.activity.entities.KubernetesClusterActivity.RelatedAppMonitoredService;
 import io.harness.cvng.activity.entities.PagerDutyActivity;
 import io.harness.cvng.activity.entities.PagerDutyActivity.PagerDutyActivityBuilder;
 import io.harness.cvng.beans.CVMonitoringCategory;
@@ -25,12 +27,17 @@ import io.harness.cvng.beans.MonitoredServiceType;
 import io.harness.cvng.beans.change.ChangeEventDTO;
 import io.harness.cvng.beans.change.ChangeEventDTO.ChangeEventDTOBuilder;
 import io.harness.cvng.beans.change.ChangeSourceType;
+import io.harness.cvng.beans.change.HarnessCDCurrentGenEventMetadata;
 import io.harness.cvng.beans.change.HarnessCDEventMetadata;
 import io.harness.cvng.beans.change.KubernetesChangeEventMetadata;
 import io.harness.cvng.beans.change.KubernetesChangeEventMetadata.Action;
 import io.harness.cvng.beans.change.KubernetesChangeEventMetadata.KubernetesResourceType;
 import io.harness.cvng.beans.change.PagerDutyEventMetaData;
 import io.harness.cvng.beans.customhealth.TimestampInfo;
+import io.harness.cvng.beans.cvnglog.ExecutionLogDTO;
+import io.harness.cvng.beans.cvnglog.ExecutionLogDTO.ExecutionLogDTOBuilder;
+import io.harness.cvng.beans.cvnglog.ExecutionLogDTO.LogLevel;
+import io.harness.cvng.beans.cvnglog.TraceableType;
 import io.harness.cvng.beans.job.Sensitivity;
 import io.harness.cvng.cdng.beans.CVNGStepInfo;
 import io.harness.cvng.cdng.beans.CVNGStepInfo.CVNGStepInfoBuilder;
@@ -129,6 +136,7 @@ import io.harness.cvng.servicelevelobjective.entities.SLOHealthIndicator.SLOHeal
 import io.harness.cvng.servicelevelobjective.entities.ServiceLevelObjective;
 import io.harness.cvng.servicelevelobjective.entities.ServiceLevelObjective.RollingSLOTarget;
 import io.harness.cvng.servicelevelobjective.entities.ServiceLevelObjective.ServiceLevelObjectiveBuilder;
+import io.harness.cvng.verificationjob.entities.CanaryVerificationJob;
 import io.harness.cvng.verificationjob.entities.TestVerificationJob;
 import io.harness.cvng.verificationjob.entities.VerificationJob;
 import io.harness.cvng.verificationjob.entities.VerificationJobInstance;
@@ -330,6 +338,8 @@ public class BuilderFactory {
         .monitoringSourceName(generateUuid())
         .metricPack(
             MetricPack.builder().identifier(CVNextGenConstants.CUSTOM_PACK_IDENTIFIER).dataCollectionDsl("dsl").build())
+        .metricInfos(
+            Arrays.asList(AppDynamicsCVConfig.MetricInfo.builder().identifier("identifier").metricName("name").build()))
         .applicationName(generateUuid())
         .tierName(generateUuid())
         .connectorIdentifier("AppDynamics Connector")
@@ -565,8 +575,7 @@ public class BuilderFactory {
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
-        .envIdentifier(context.getEnvIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .enabled(true)
         .type(ChangeSourceType.HARNESS_CD);
   }
@@ -576,8 +585,7 @@ public class BuilderFactory {
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
-        .envIdentifier(context.getEnvIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .enabled(true)
         .connectorIdentifier(randomAlphabetic(20))
         .pagerDutyServiceId(randomAlphabetic(20))
@@ -588,10 +596,9 @@ public class BuilderFactory {
     return KubernetesChangeSource.builder()
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .enabled(true)
         .type(ChangeSourceType.KUBERNETES)
-        .envIdentifier(context.getEnvIdentifier())
         .connectorIdentifier(generateUuid())
         .identifier(generateUuid());
   }
@@ -601,8 +608,7 @@ public class BuilderFactory {
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
-        .envIdentifier(context.getEnvIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .enabled(true)
         .harnessApplicationId(randomAlphabetic(20))
         .harnessServiceId(randomAlphabetic(20))
@@ -641,8 +647,7 @@ public class BuilderFactory {
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
-        .environmentIdentifier(context.getEnvIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceParams().getMonitoredServiceIdentifier())
         .eventTime(clock.instant())
         .changeSourceIdentifier("changeSourceID")
         .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
@@ -662,13 +667,33 @@ public class BuilderFactory {
         .activityStartTime(clock.instant());
   }
 
+  public HarnessCDCurrentGenActivityBuilder getHarnessCDCurrentGenActivityBuilder() {
+    return HarnessCDCurrentGenActivity.builder()
+        .accountId(context.getAccountId())
+        .orgIdentifier(context.getOrgIdentifier())
+        .projectIdentifier(context.getProjectIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceParams().getMonitoredServiceIdentifier())
+        .eventTime(clock.instant())
+        .changeSourceIdentifier("changeSourceID")
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
+        .type(ChangeSourceType.HARNESS_CD.getActivityType())
+        .artifactType("artifactType")
+        .artifactName("artifactName")
+        .workflowEndTime(clock.instant())
+        .workflowStartTime(clock.instant())
+        .workflowId("workflowId")
+        .workflowExecutionId("workflowExecutionId")
+        .activityName(generateUuid())
+        .activityEndTime(clock.instant())
+        .activityStartTime(clock.instant());
+  }
+
   public KubernetesClusterActivityBuilder getKubernetesClusterActivityBuilder() {
     return KubernetesClusterActivity.builder()
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
-        .environmentIdentifier(context.getEnvIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .eventTime(clock.instant())
         .changeSourceIdentifier("changeSourceID")
         .type(ChangeSourceType.KUBERNETES.getActivityType())
@@ -686,8 +711,7 @@ public class BuilderFactory {
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier())
-        .environmentIdentifier(context.getEnvIdentifier())
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .eventTime(clock.instant())
         .changeSourceIdentifier("changeSourceID")
         .type(ChangeSourceType.PAGER_DUTY.getActivityType())
@@ -702,22 +726,19 @@ public class BuilderFactory {
         .accountId(context.getAccountId())
         .orgIdentifier(context.getOrgIdentifier())
         .projectIdentifier(context.getProjectIdentifier())
-        .serviceIdentifier(context.getServiceIdentifier() + "-infra")
-        .environmentIdentifier(context.getEnvIdentifier() + "-infra")
+        .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
         .eventTime(clock.instant())
         .changeSourceIdentifier("changeSourceID")
         .type(ChangeSourceType.KUBERNETES.getActivityType())
         .activityStartTime(clock.instant())
         .activityName("K8 Activity")
         .resourceVersion("resource-version")
-        .relatedAppServices(Arrays.asList(ServiceEnvironment.builder()
-                                              .environmentIdentifier(context.getEnvIdentifier())
-                                              .serviceIdentifier(context.getServiceIdentifier())
+        .relatedAppServices(Arrays.asList(RelatedAppMonitoredService.builder()
                                               .monitoredServiceIdentifier(context.getMonitoredServiceIdentifier())
                                               .build()));
   }
 
-  public ChangeEventDTOBuilder getHarnessCDChangeEventDTOBuilder() {
+  public ChangeEventDTOBuilder harnessCDChangeEventDTOBuilder() {
     return getChangeEventDTOBuilder()
         .type(ChangeSourceType.HARNESS_CD)
         .metadata(HarnessCDEventMetadata.builder()
@@ -732,6 +753,19 @@ public class BuilderFactory {
                       .artifactType("artifactType")
                       .artifactTag("artifactTag")
                       .status("status")
+                      .build());
+  }
+
+  public ChangeEventDTOBuilder harnessCDCurrentGenChangeEventDTOBuilder() {
+    return getChangeEventDTOBuilder()
+        .type(ChangeSourceType.HARNESS_CD_CURRENT_GEN)
+        .metadata(HarnessCDCurrentGenEventMetadata.builder()
+                      .artifactType("artifactType")
+                      .artifactName("artifactName")
+                      .workflowEndTime(clock.millis())
+                      .workflowStartTime(clock.millis())
+                      .workflowId("workflowId")
+                      .workflowExecutionId("workflowExecutionId")
                       .build());
   }
 
@@ -946,6 +980,21 @@ public class BuilderFactory {
     return testVerificationJob;
   }
 
+  public VerificationJob getDeploymentVerificationJob() {
+    CanaryVerificationJob canaryVerificationJob = new CanaryVerificationJob();
+    canaryVerificationJob.setAccountId(context.getAccountId());
+    canaryVerificationJob.setIdentifier("identifier");
+    canaryVerificationJob.setJobName(generateUuid());
+    canaryVerificationJob.setMonitoringSources(Arrays.asList("monitoringIdentifier"));
+    canaryVerificationJob.setSensitivity(Sensitivity.MEDIUM);
+    canaryVerificationJob.setServiceIdentifier(context.getServiceIdentifier(), false);
+    canaryVerificationJob.setEnvIdentifier(context.getEnvIdentifier(), false);
+    canaryVerificationJob.setDuration(Duration.ofMinutes(5));
+    canaryVerificationJob.setProjectIdentifier(context.getProjectIdentifier());
+    canaryVerificationJob.setOrgIdentifier(context.getOrgIdentifier());
+    return canaryVerificationJob;
+  }
+
   public static class BuilderFactoryBuilder {
     public BuilderFactory build() {
       BuilderFactory builder = unsafeBuild();
@@ -1014,5 +1063,20 @@ public class BuilderFactory {
           .monitoredServiceIdentifier(getMonitoredServiceIdentifier())
           .build();
     }
+  }
+
+  public ExecutionLogDTOBuilder executionLogDTOBuilder() {
+    long createdAt = CVNGTestConstants.FIXED_TIME_FOR_TESTS.instant().toEpochMilli();
+    Instant startTime = CVNGTestConstants.FIXED_TIME_FOR_TESTS.instant().minusSeconds(5);
+    Instant endTime = CVNGTestConstants.FIXED_TIME_FOR_TESTS.instant();
+    return ExecutionLogDTO.builder()
+        .accountId(context.getAccountId())
+        .traceableId("traceableId")
+        .log("Data Collection successfully completed.")
+        .logLevel(LogLevel.INFO)
+        .startTime(startTime.toEpochMilli())
+        .endTime(endTime.toEpochMilli())
+        .createdAt(createdAt)
+        .traceableType(TraceableType.VERIFICATION_TASK);
   }
 }

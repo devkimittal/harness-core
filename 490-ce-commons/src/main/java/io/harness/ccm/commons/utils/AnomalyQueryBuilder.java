@@ -1,3 +1,10 @@
+/*
+ * Copyright 2022 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Free Trial 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/05/PolyForm-Free-Trial-1.0.0.txt.
+ */
+
 package io.harness.ccm.commons.utils;
 
 import static io.harness.ccm.commons.entities.CCMField.ALL;
@@ -127,6 +134,10 @@ public class AnomalyQueryBuilder {
         return ANOMALIES.AWSACCOUNT;
       case AWS_SERVICE:
         return ANOMALIES.AWSSERVICE;
+      case AWS_USAGE_TYPE:
+        return ANOMALIES.AWSUSAGETYPE;
+      case AWS_INSTANCE_TYPE:
+        return ANOMALIES.AWSINSTANCETYPE;
       case GCP_PROJECT:
         return ANOMALIES.GCPPROJECT;
       case GCP_PRODUCT:
@@ -161,6 +172,10 @@ public class AnomalyQueryBuilder {
         return ANOMALIES.AWSACCOUNT;
       case AWS_SERVICE:
         return ANOMALIES.AWSSERVICE;
+      case AWS_USAGE_TYPE:
+        return ANOMALIES.AWSUSAGETYPE;
+      case AWS_INSTANCE_TYPE:
+        return ANOMALIES.AWSINSTANCETYPE;
       case GCP_PROJECT:
         return ANOMALIES.GCPPROJECT;
       case GCP_PRODUCT:
