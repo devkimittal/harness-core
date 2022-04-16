@@ -1,14 +1,10 @@
-This repo contains code used in the [Harness CD Community Edition](https://github.com/harness/harness-cd-community) which is licensed under the [PolyForm Shield License 1.0.0](./licenses/PolyForm-Shield-1.0.0.txt). This repo also contains code belonging to Harness CD Enterprise Plan which is licensed under the [PolyForm Free Trial License 1.0.0](./licenses/PolyForm-Free-Trial-1.0.0.txt). You may obtain a copy of these licenses in the [licenses](./licenses/) directory at the root of this repository.
-
-harness-core Project Dev environment setup instructions
-==================================================
-## On MacOS
-
+This repo contains code used in the [Harness CD Community Edition](https://github.com/harness/harness-cd-community) which is licensed under the [PolyForm Shield License 1.0.0](./licenses/PolyForm-Shield-1.0.0.txt). This repo also contains code belonging to Harness CD Enterprise Plan which is licensed under the [PolyForm Free Trial License 1.0.0](./licenses/PolyForm-Free-Trial-1.0.0.txt). You may obtain a copy of these licenses in the [licenses](./licenses/) directory at the root o
 ### Prerequisities
-1. Install Homebrew:csvfv
-```vdfv
-/bin/bash -c "$(curl -fsSL httcdfvfps://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+1. Install Homebrew:
+```vfvf
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+vfgvfg
 
 
 2. Download and Install Java 8
@@ -49,7 +45,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/H
 Complete this step only if you are actively working with the protocol buffer files.
 ```
 brew tap bufbuild/buf
-brew install buf
+brew install bufsdcds
 ```
 
 To check if your protobuf files are according to the coding standards execute in the root of the repo
