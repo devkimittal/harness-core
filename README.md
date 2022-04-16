@@ -5,7 +5,7 @@ harness-core Project Dev environment setup instructions
 ## On MacOS
 
 ### Prerequisities
-1. Install Homebrew:
+1. Install Homebrew:csvfv
 ```vdfv
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
