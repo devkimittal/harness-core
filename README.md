@@ -17,7 +17,7 @@ harness-core Project Dev environment setup instructions
 
    To setup the recommended version, download the OpenJDK 1.8-242 (jdk8u242-b08) JRE .pkg from [AdoptOpenJDK](https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/tag/jdk8u242-b08) and install it. Make sure to update `JAVA_HOME` and `PATH` accordingly (see step 5).
 
-3. Install bazel:
+3. Install bazel:fvvdfv
 ```
 brew install bazelisk
 
