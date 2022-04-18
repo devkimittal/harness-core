@@ -85,7 +85,7 @@ Official steps to install docker on mac: [docker.com](https://docs.docker.com/de
     NOTE: if you clone the repo to another location you will have to do this again. On the other side you will be getting fixes and updates with no extra effort.
 
 ### Build
-
+f jgfg g
 #### Some Bazel Best Practices you can follow before building harness-core locally.
 `https://harness.atlassian.net/wiki/spaces/BT/pages/1910047082/Bazel+best+practices+for+faster+and+efficient+builds.`
 
