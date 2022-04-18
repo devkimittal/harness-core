@@ -4,7 +4,7 @@ This repo contains code used in the [Harness CD Community Edition](https://githu
 ```vfvf
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
-
+dmnvc
 
 2. Download and Install Java 8
 
