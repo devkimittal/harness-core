@@ -2,7 +2,7 @@ This repo contains code used in the [Harness CD Community Edition](https://githu
 ### Prerequisities
 1. Install Homebrew:
 ```vfvf
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://ravvvfw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 
