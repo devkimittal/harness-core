@@ -7,7 +7,7 @@ harness-core Project Dev environment setup instructions
 ### Prerequisities
 1. Install Homebrew:
 ```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://test triggerraw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 
