@@ -1,13 +1,8 @@
-This repo contains code used in the [Harness CD Community Edition](https://github.com/harness/harness-cd-community) which is licensed under the [PolyForm Shield License 1.0.0](./licenses/PolyForm-Shield-1.0.0.txt). This repo also contains code belonging to Harness CD Enterprise Plan which is licensed under the [PolyForm Free Trial License 1.0.0](./licenses/PolyForm-Free-Trial-1.0.0.txt). You may obtain a copy of these licenses in the [licenses](./licenses/) directory at the root of this repository.
-
-harness-core Project Dev environment setup instructions
-==================================================
-## On MacOS
-
+This repo contains code used in the [Harness CD Community Edition](https://github.com/harness/harness-cd-community) which is licensed under the [PolyForm Shield License 1.0.0](./licenses/PolyForm-Shield-1.0.0.txt). This repo also contains code belonging to Harness CD Enterprise Plan which is licensed under the [PolyForm Free Trial License 1.0.0](./licenses/PolyForm-Free-Trial-1.0.0.txt). You may obtain a copy of these licenses in the [licenses](./licenses/) directory at the root o
 ### Prerequisities
 1. Install Homebrew:
-```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```vfvf
+/bin/bash -c "$(curl -fsSL https://ravvvfw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 
@@ -17,7 +12,7 @@ harness-core Project Dev environment setup instructions
 
    To setup the recommended version, download the OpenJDK 1.8-242 (jdk8u242-b08) JRE .pkg from [AdoptOpenJDK](https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/tag/jdk8u242-b08) and install it. Make sure to update `JAVA_HOME` and `PATH` accordingly (see step 5).
 
-3. Install bazel:
+3. Install bazel:fvvdfv
 ```
 brew install bazelisk
 
@@ -27,7 +22,7 @@ brew install bazelisk
 ```
 brew install npm
 ```
-
+dfsv
 5. Set up JAVA_HOME: create or add this to your bash profile `~/.bashrc` or `~/.zshrc` file and add following line:
 ```
 export JAVA_HOME=$(/usr/libexec/java_home -v1.8)
@@ -49,7 +44,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/H
 Complete this step only if you are actively working with the protocol buffer files.
 ```
 brew tap bufbuild/buf
-brew install buf
+brew install bufsdcds
 ```
 
 To check if your protobuf files are according to the coding standards execute in the root of the repo
@@ -252,7 +247,7 @@ echo "export PATH="$PATH:$HOME/<path-to-above-directory>/bin" >> ~/.zshrc
 to format .graphql files: you can follow these steps:
 
 * `npm install --global prettier@1.19.1`
-
+csdvdf
 * `prettier --write --print-width=120 <filename>` - formats given graphql file
 
 helper shell scripts:
