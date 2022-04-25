@@ -1,0 +1,14 @@
+inputSet:
+  identifier: "develop_branch"
+  name: "develop_branch"
+  orgIdentifier: "default"
+  projectIdentifier: "local_project"
+  pipeline:
+    identifier: "local_pipe_march"
+    properties:
+      ci:
+        codebase:
+          build:
+            type: "branch"
+            spec:
+              branch: "develop"
