@@ -1,0 +1,35 @@
+pipeline:
+    name: CI_3745
+    identifier: CI_3745
+    allowStageExecutions: false
+    projectIdentifier: local_project
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: github_connect
+                build: <+input>
+    stages:
+        - stage:
+              name: build
+              identifier: build
+              type: CI
+              spec:
+                  cloneCodebase: false
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: kube_cluster
+                          namespace: harness-qa-delegate
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: docker
+                                identifier: docker
+                                spec:
+                                    connectorRef: local_dock
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo "build it"
