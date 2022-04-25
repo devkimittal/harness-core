@@ -1,5 +1,5 @@
 connector:
-  name: github_connect
+  name: github_connect1
   identifier: github_connect
   description:
   orgIdentifier: default
