@@ -1,0 +1,19 @@
+connector:
+  name: kube_cluster
+  identifier: kube_cluster
+  description:
+  orgIdentifier: default
+  projectIdentifier: local_project
+  type: K8sCluster
+  spec:
+    credential:
+      type: ManualConfig
+      spec:
+        masterUrl: https://35.184.86.207
+        auth:
+          type: ServiceAccount
+          spec:
+            serviceAccountTokenRef: ciplay_secret
+            caCertRef: null
+    delegateSelectors:
+    - acctgroup
