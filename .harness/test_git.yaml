@@ -1,5 +1,5 @@
 connector:
-  name: test_git_
+  name: test_git
   identifier: test_git
   description:
   orgIdentifier: default
