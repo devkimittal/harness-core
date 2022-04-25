@@ -1,0 +1,23 @@
+connector:
+  name: github_connect
+  identifier: github_connect
+  description:
+  orgIdentifier: default
+  projectIdentifier: local_project
+  type: Github
+  spec:
+    url: https://github.com/devkimittal/harness-core.git
+    validationRepo: harness-core.git
+    authentication:
+      type: Http
+      spec:
+        type: UsernameToken
+        spec:
+          username: devkimittal
+          tokenRef: git_connector_token
+    apiAccess:
+      type: Token
+      spec:
+        tokenRef: git_connector_token
+    executeOnDelegate: true
+    type: Repo
