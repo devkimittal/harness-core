@@ -1,0 +1,19 @@
+connector:
+  name: CI_3574
+  identifier: CI_3574
+  description:
+  orgIdentifier: default
+  projectIdentifier: local_project
+  type: Github
+  spec:
+    url: https://github.com/devkimittal/
+    validationRepo: harness-core.git
+    authentication:
+      type: Http
+      spec:
+        type: UsernameToken
+        spec:
+          username: devkimittal
+          tokenRef: devki_mittal
+    executeOnDelegate: false
+    type: Account
