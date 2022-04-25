@@ -1,0 +1,14 @@
+connector:
+  name: local_dock
+  identifier: local_dock
+  description:
+  orgIdentifier: default
+  projectIdentifier: local_project
+  type: DockerRegistry
+  spec:
+    dockerRegistryUrl: https://index.docker.io/v2/
+    providerType: DockerHub
+    auth:
+      type: Anonymous
+    delegateSelectors:
+    - acctgroup
