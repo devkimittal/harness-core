@@ -1,0 +1,47 @@
+pipeline:
+    name: local_pipe_march
+    identifier: local_pipe_march
+    allowStageExecutions: false
+    projectIdentifier: local_project
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: github_connect
+                build: <+input>
+    stages:
+        - stage:
+              name: build
+              identifier: build
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: kube_cluster
+                          namespace: harness-qa-delegate
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: run
+                                identifier: run
+                                spec:
+                                    connectorRef: local_dock
+                                    image: alpine
+                                    shell: Sh
+                                    command: |-
+                                        echo "Hello_trigegr \n"
+                                        echo "<+trigger.branch>"
+                          - step:
+                                type: Run
+                                name: docker 3
+                                identifier: docker_3
+                                spec:
+                                    connectorRef: local_dock
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo "run2"
+    variables: []
