@@ -1,0 +1,35 @@
+pipeline:
+    name: local_pipe_march_
+    identifier: local_pipe_march
+    allowStageExecutions: false
+    projectIdentifier: local_project
+    orgIdentifier: default
+    tags: {}
+    stages:
+        - stage:
+              name: build
+              identifier: build
+              type: CI
+              spec:
+                  cloneCodebase: false
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: kube
+                          namespace: harness-qa-delegate
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: run
+                                identifier: run
+                                spec:
+                                    connectorRef: account.harnessImage
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo "hello pipeline"
+    properties:
+        ci:
+            codebase:
+                connectorRef: github
+                build: <+input>
