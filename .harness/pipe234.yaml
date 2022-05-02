@@ -1,0 +1,30 @@
+pipeline:
+    name: pipe2
+    identifier: pipe
+    allowStageExecutions: false
+    projectIdentifier: local_project
+    orgIdentifier: default
+    tags: {}
+    stages:
+        - stage:
+              name: buidl
+              identifier: buidl
+              type: CI
+              spec:
+                  cloneCodebase: false
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: kube
+                          namespace: harness-qa-delegate
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: run
+                                identifier: run
+                                spec:
+                                    connectorRef: account.harnessImage
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo "new pipe"
