@@ -1,0 +1,14 @@
+inputSet:
+  identifier: "overlayff"
+  name: "overlayff"
+  orgIdentifier: "default"
+  projectIdentifier: "local_project"
+  pipeline:
+    identifier: "local_pipe_march"
+    properties:
+      ci:
+        codebase:
+          build:
+            type: "branch"
+            spec:
+              branch: "develop"
