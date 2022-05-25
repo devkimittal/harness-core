@@ -45,6 +45,7 @@ import io.harness.exception.InvalidRequestException;
 import io.harness.exception.WingsException;
 import io.harness.exception.YamlException;
 import io.harness.exception.runtime.JGitRuntimeException;
+import io.harness.exception.runtime.SCMRuntimeException;
 import io.harness.filesystem.FileIo;
 import io.harness.git.model.AuthInfo;
 import io.harness.git.model.ChangeType;
@@ -91,6 +92,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.FailsafeException;
 import net.jodah.failsafe.RetryPolicy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -346,6 +348,18 @@ public class GitClientV2Impl implements GitClientV2 {
       log.info(gitClientHelper.getGitLogMessagePrefix(request.getRepoType()) + "Git validation failed [{}]", e);
       if (e instanceof GitAPIException) {
         throw new JGitRuntimeException(e.getMessage(), e);
+      } else if (e instanceof FailsafeException) {
+        if (e.getMessage().contains("upload-pack not found")) {
+          throw SCMRuntimeException.builder()
+              .message("Please provide correct git repo url")
+              .errorCode(ErrorCode.GIT_CONNECTION_ERROR)
+              .build();
+        } else {
+          throw SCMRuntimeException.builder()
+              .message("Git connection timed out")
+              .errorCode(ErrorCode.CONNECTION_TIMEOUT)
+              .build();
+        }
       } else {
         throw new GeneralException(e.getMessage(), e);
       }
