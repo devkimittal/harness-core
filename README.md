@@ -222,7 +222,10 @@ cd to `harness-core` directory
 
 5. Start Command Library Service (Optional)
 
-   * `java -Xms1024m -Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:mygclogfilename.gc -XX:+UseParallelGC -XX:MaxGCPauseMillis=500 -Xbootclasspath/p:alpn-boot-8.1.13.v20181017.jar -Dfile.encoding=UTF-8 -jar ~/.bazel-dirs/bin/210-command-library-server/module_deploy.jar 210-command-library-server/command-library-server-config.yml > command_library_service.log &`
+   * `java -Xms1024m -Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:mygclogfilename.gc -XX:+UseParallelGC -XX:MaxGCPauseMillis=500 -Xbootclasspath/p:alp
+   * n-boot-8.1.13.v20181017.jar -Dfile.encoding=UTF-8 -jar ~/.bazel-dirs/bin/210-command-library-server/module_deploy.jar 210-command-library-server/command-library-server-config.yml > command_library_service.log &`
+
+dfv
 
 6. Start UI (Optional)
 
