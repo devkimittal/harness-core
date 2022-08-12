@@ -29,6 +29,7 @@ brew install npm
 5. Set up JAVA_HOME: create or add this to your bash profile `~/.bashrc` or `~/.zshrc` file and add following line:
 ```
 ulimit -u 8192
+//ss
 export JAVA_HOME=$(/usr/libexec/java_home -v1.8)
 ```
 
