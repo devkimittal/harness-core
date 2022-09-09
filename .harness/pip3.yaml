@@ -1,0 +1,32 @@
+pipeline:
+  name: pip3
+  identifier: pip3
+  projectIdentifier: git_final_test2
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: blah
+        identifier: blah
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: false
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: account.CItestK8sConnectorqJWDaaEFr6
+              namespace: harness-qa-delegate
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: run
+                  identifier: run
+                  spec:
+                    connectorRef: account.CItestDockerConnectorM75xpPYBMm
+                    image: alpine
+                    shell: Sh
+                    command: echo hj
