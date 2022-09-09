@@ -4,19 +4,13 @@ pipeline:
   projectIdentifier: git_final_test2
   orgIdentifier: default
   tags: {}
-  properties:
-    ci:
-      codebase:
-        connectorRef: github
-        build: <+input>
   stages:
     - stage:
         name: CI
         identifier: CI
-        description: ""
         type: CI
         spec:
-          cloneCodebase: true
+          cloneCodebase: false
           infrastructure:
             type: KubernetesDirect
             spec:
