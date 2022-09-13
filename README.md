@@ -2,7 +2,7 @@ Portal Project Dev environment setup instructions
 ==================================================
 ## On MacOS 
 
-### Prerequisities
+### Prerequisities ygy
 1. Install Homebrew:
 ```
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
