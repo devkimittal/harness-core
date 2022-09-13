@@ -1,0 +1,14 @@
+inputSet:
+  identifier: "trigger_branch"
+  name: "trigger_branch"
+  orgIdentifier: "default"
+  projectIdentifier: "git_sync"
+  pipeline:
+    identifier: "pipe2"
+    properties:
+      ci:
+        codebase:
+          build:
+            type: "branch"
+            spec:
+              branch: "<+trigger.payload.branch>"
