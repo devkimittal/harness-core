@@ -39,8 +39,8 @@ pipeline:
         connectorRef: github
         build: <+input>
   variables:
-    - name: blah
+    - name: ACCOUNT
       type: String
-      default: "11"
-      description: ""
-      value: <+input>.allowedValues(11,22,23434565767787,74576)
+      default: "635780325939"
+      description: The AWS account name
+      value: <+input>.allowedValues(635780325939,682624005382,355166347423,822078214230,608178844183)
