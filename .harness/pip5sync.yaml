@@ -22,17 +22,16 @@ pipeline:
           execution:
             steps:
               - step:
-                  type: Run
-                  name: run4
-                  identifier: run4
-                  spec:
-                    connectorRef: account.CItestDockerConnectorTXOk8jdmqC
-                    image: alpine
-                    shell: Sh
-                    command: echo run4
-                    envVariables:
-                      envvar: arn:aws:iam::<+pipeline.variables.ACCOUNT>:role/jenkins/terraform/JenkinsTerraformOrchestrationRole
-                  failureStrategies: []
+                  name: dhsvbf vj v
+                  identifier: dhsvbf_vj_v
+                  template:
+                    templateRef: account.runtemp
+                    versionLabel: "1"
+                    templateInputs:
+                      type: Run
+                      spec:
+                        envVariables:
+                          tempvar: <+input>
   properties:
     ci:
       codebase:
