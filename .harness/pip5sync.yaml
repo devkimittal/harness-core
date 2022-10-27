@@ -22,16 +22,11 @@ pipeline:
           execution:
             steps:
               - step:
-                  name: dhsvbf vj v
-                  identifier: dhsvbf_vj_v
+                  name: cdsvcfvf
+                  identifier: cdsvcfvf
                   template:
                     templateRef: account.runtemp
                     versionLabel: "1"
-                    templateInputs:
-                      type: Run
-                      spec:
-                        envVariables:
-                          tempvar: <+input>
   properties:
     ci:
       codebase:
