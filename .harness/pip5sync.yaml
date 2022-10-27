@@ -31,7 +31,7 @@ pipeline:
                       type: Run
                       spec:
                         envVariables:
-                          tempvar: <+input>
+                          tempvar: arn:aws:iam::<+pipeline.variables.ACCOUNT>:role/jenkins/terraform/JenkinsTerraformOrchestrationRole
   properties:
     ci:
       codebase:
