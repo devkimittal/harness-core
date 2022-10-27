@@ -27,6 +27,11 @@ pipeline:
                   template:
                     templateRef: account.runtemp
                     versionLabel: "1"
+                    templateInputs:
+                      type: Run
+                      spec:
+                        envVariables:
+                          tempvar: <+input>
   properties:
     ci:
       codebase:
