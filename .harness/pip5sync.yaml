@@ -31,7 +31,7 @@ pipeline:
                     shell: Sh
                     command: echo run4
                     envVariables:
-                      envvar: <+pipeline.variables.blah>
+                      envvar: arn:aws:iam::<+pipeline.variables.ACCOUNT>:role/jenkins/terraform/JenkinsTerraformOrchestrationRole
                   failureStrategies: []
   properties:
     ci:
