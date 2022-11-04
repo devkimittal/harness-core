@@ -1,0 +1,19 @@
+inputSet:
+  identifier: "spaceinput"
+  name: "spaceinput"
+  orgIdentifier: "CITestDemoOrgnpAUTg9bai"
+  projectIdentifier: "CITestDemoProsQQ6BmCDXS"
+  pipeline:
+    identifier: "remotepipe"
+    stages:
+    - stage:
+        identifier: "Build"
+        type: "CI"
+        spec:
+          execution:
+            steps:
+            - step:
+                identifier: "output_list"
+                type: "Run"
+                when:
+                  condition: "     "
