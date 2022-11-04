@@ -1,0 +1,36 @@
+pipeline:
+  name: remotepipe
+  identifier: remotepipe
+  projectIdentifier: CITestDemoProsQQ6BmCDXS
+  orgIdentifier: CITestDemoOrgnpAUTg9bai
+  tags: {}
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        type: CI
+        spec:
+          cloneCodebase: false
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: kube
+              namespace: harness-qa-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: output list
+                  identifier: output_list
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: docker
+                    shell: Sh
+                    command: echo "hello"
+                  when:
+                    stageStatus: Success
+                    condition: <+input>
+                  failureStrategies: []
