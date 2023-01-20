@@ -95,6 +95,7 @@ public class IntegrationStagePMSPlanCreatorV2 extends AbstractStagePlanCreator<I
   @Inject private KryoSerializer kryoSerializer;
   @Inject private ConnectorUtils connectorUtils;
   @Inject private CILicenseService ciLicenseService;
+  @Inject private CIStagePlanCreationUtils ciStagePlanCreationUtils;
   @Inject CIAccountExecutionMetadataRepository accountExecutionMetadataRepository;
 
   @Override
@@ -132,7 +133,7 @@ public class IntegrationStagePMSPlanCreatorV2 extends AbstractStagePlanCreator<I
 
     Infrastructure infrastructure = IntegrationStageStepParametersPMS.getInfrastructure(stageNode, ctx);
 
-    CIStagePlanCreationUtils.validateFreeAccountStageExecutionLimit(
+    ciStagePlanCreationUtils.validateFreeAccountStageExecutionLimit(
         accountExecutionMetadataRepository, ciLicenseService, ctx.getAccountIdentifier(), infrastructure);
 
     ExecutionElementConfig modifiedExecutionPlan =

@@ -20,6 +20,30 @@ features:
       ENTERPRISE:
         restrictionType: AVAILABILITY
         enabled: true
+  - name: MAX_HOSTED_CREDITS_PER_MONTH
+    description: Max hosted build credits per month
+    restrictions:
+      FREE:
+        restrictionType: RATE_LIMIT
+        limit: 2000
+        timeUnit:
+          unit: MONTHS
+          numberOfUnits: 1
+        clientName: cimanager
+      TEAM:
+        restrictionType: RATE_LIMIT
+        limit: 2500
+        timeUnit:
+          unit: MONTHS
+          numberOfUnits: 1
+        clientName: cimanager
+      ENTERPRISE:
+        restrictionType: RATE_LIMIT
+        limit: 3000
+        timeUnit:
+          unit: MONTHS
+          numberOfUnits: 1
+        clientName: cimanager
   - name: MAX_TOTAL_BUILDS
     description: Max total builds
     restrictions:

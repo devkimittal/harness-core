@@ -8,24 +8,37 @@
 package io.harness.enforcement.client;
 
 import io.harness.NGCommonEntityConstants;
+import io.harness.accesscontrol.AccountIdentifier;
 import io.harness.annotations.dev.HarnessTeam;
 import io.harness.annotations.dev.OwnedBy;
+import io.harness.enforcement.beans.FeatureRestrictionUsageDTO;
 import io.harness.enforcement.beans.details.FeatureRestrictionDetailListRequestDTO;
 import io.harness.enforcement.beans.details.FeatureRestrictionDetailRequestDTO;
 import io.harness.enforcement.beans.details.FeatureRestrictionDetailsDTO;
 import io.harness.enforcement.beans.internal.RestrictionMetadataMapRequestDTO;
 import io.harness.enforcement.beans.internal.RestrictionMetadataMapResponseDTO;
 import io.harness.enforcement.beans.metadata.FeatureRestrictionMetadataDTO;
+import io.harness.enforcement.beans.metadata.RestrictionMetadataDTO;
+import io.harness.enforcement.client.usage.RestrictionUsageInterface;
 import io.harness.enforcement.constants.FeatureRestrictionName;
 import io.harness.ng.core.dto.ResponseDTO;
 
 import java.util.List;
+
+import io.harness.security.annotations.InternalApi;
+import io.swagger.v3.oas.annotations.Operation;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 @OwnedBy(HarnessTeam.GTM)
 public interface EnforcementClient {
@@ -33,6 +46,12 @@ public interface EnforcementClient {
   Call<ResponseDTO<FeatureRestrictionMetadataDTO>> getFeatureRestrictionMetadata(
       @Path("featureRestrictionName") FeatureRestrictionName featureRestrictionName,
       @Query(NGCommonEntityConstants.ACCOUNT_KEY) String accountIdentifier);
+
+  @PUT("enforcement/client/usage/{featureRestrictionName}")
+  Call<ResponseDTO<FeatureRestrictionUsageDTO>> getFeatureUsage(
+          @Path("featureRestrictionName") FeatureRestrictionName featureRestrictionName,
+          @Query(NGCommonEntityConstants.ACCOUNT_KEY) @AccountIdentifier String accountIdentifier,
+          @Body RestrictionMetadataDTO restrictionMetadataDTO);
 
   @POST("enforcement/metadata")
   Call<ResponseDTO<RestrictionMetadataMapResponseDTO>> getFeatureRestrictionMetadataMap(

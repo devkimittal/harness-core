@@ -13,6 +13,7 @@ import static io.harness.remote.client.NGRestUtils.getResponse;
 import io.harness.ModuleType;
 import io.harness.configuration.DeployVariant;
 import io.harness.enforcement.beans.CustomRestrictionEvaluationDTO;
+import io.harness.enforcement.beans.FeatureRestrictionUsageDTO;
 import io.harness.enforcement.beans.details.FeatureRestrictionDetailListRequestDTO;
 import io.harness.enforcement.beans.details.FeatureRestrictionDetailRequestDTO;
 import io.harness.enforcement.beans.details.FeatureRestrictionDetailsDTO;
@@ -252,6 +253,24 @@ public class EnforcementClientServiceImpl implements EnforcementClientService {
     } catch (InvalidRequestException invalidRequestException) {
       throw new WrongFeatureStateException(
           String.format("Can't fetch RestrictionMetadataDTO for [%s]", featureRestrictionName), invalidRequestException,
+          invalidRequestException.getMessage().contains("Invalid license status"));
+    } catch (UnexpectedException e) {
+      throw new EnforcementServiceConnectionException("Unable to connect to enforcement endpoints", e);
+    }
+  }
+
+  @Override
+  public Optional<FeatureRestrictionUsageDTO> getFeatureUsage(FeatureRestrictionName featureRestrictionName,
+      String accountIdentifier, RestrictionMetadataDTO restrictionMetadataDTO)
+      throws WrongFeatureStateException, EnforcementServiceConnectionException {
+    try {
+      FeatureRestrictionUsageDTO response = getResponse(
+          enforcementClient.getFeatureUsage(featureRestrictionName, accountIdentifier, restrictionMetadataDTO));
+
+      return Optional.ofNullable(response);
+    } catch (InvalidRequestException invalidRequestException) {
+      throw new WrongFeatureStateException(
+          String.format("Can't fetch RestrictionUsageDTO for [%s]", featureRestrictionName), invalidRequestException,
           invalidRequestException.getMessage().contains("Invalid license status"));
     } catch (UnexpectedException e) {
       throw new EnforcementServiceConnectionException("Unable to connect to enforcement endpoints", e);

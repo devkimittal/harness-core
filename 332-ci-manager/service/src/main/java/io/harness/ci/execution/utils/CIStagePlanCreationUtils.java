@@ -9,12 +9,12 @@ package io.harness.ci.utils;
 
 import io.harness.beans.stages.IntegrationStageNode;
 import io.harness.beans.yaml.extended.infrastrucutre.Infrastructure;
-import io.harness.ci.execution.CIAccountExecutionMetadata;
+import io.harness.ci.enforcement.HostedCreditsPerMonthRestriction;
 import io.harness.ci.license.CILicenseService;
 import io.harness.data.structure.CollectionUtils;
-import io.harness.exception.ngexception.CIStageExecutionException;
-import io.harness.licensing.Edition;
-import io.harness.licensing.beans.summary.LicensesWithSummaryDTO;
+import io.harness.enforcement.client.annotation.FeatureRestrictionCheck;
+import io.harness.enforcement.client.services.EnforcementClientService;
+import io.harness.enforcement.constants.FeatureRestrictionName;
 import io.harness.plancreator.steps.common.StageElementParameters;
 import io.harness.plancreator.steps.common.StageElementParameters.StageElementParametersBuilder;
 import io.harness.pms.tags.TagUtils;
@@ -23,16 +23,13 @@ import io.harness.repositories.CIAccountExecutionMetadataRepository;
 import io.harness.steps.SdkCoreStepUtils;
 import io.harness.yaml.utils.NGVariablesUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.util.Map;
-import java.util.Optional;
+import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CIStagePlanCreationUtils {
+  @Inject EnforcementClientService enforcementClientService;
+
   public static StageElementParametersBuilder getStageParameters(IntegrationStageNode stageNode) {
     TagUtils.removeUuidFromTags(stageNode.getTags());
 
@@ -57,29 +54,12 @@ public class CIStagePlanCreationUtils {
         || infrastructure.getType().equals(Infrastructure.Type.KUBERNETES_HOSTED);
   }
 
-  public static void validateFreeAccountStageExecutionLimit(
+  @FeatureRestrictionCheck(FeatureRestrictionName.MAX_HOSTED_CREDITS_PER_MONTH)
+  public void validateFreeAccountStageExecutionLimit(
       CIAccountExecutionMetadataRepository accountExecutionMetadataRepository, CILicenseService ciLicenseService,
       String accountId, Infrastructure infrastructure) {
     if (isHostedInfra(infrastructure)) {
-      LicensesWithSummaryDTO licensesWithSummaryDTO = ciLicenseService.getLicenseSummary(accountId);
-      if (licensesWithSummaryDTO != null && licensesWithSummaryDTO.getEdition() == Edition.FREE) {
-        Optional<CIAccountExecutionMetadata> accountExecutionMetadata =
-            accountExecutionMetadataRepository.findByAccountId(accountId);
-
-        if (accountExecutionMetadata.isPresent()) {
-          LocalDate startDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
-          YearMonth yearMonth = YearMonth.of(startDate.getYear(), startDate.getMonth());
-          String day = yearMonth + "-" + startDate.getDayOfMonth();
-          Map<String, Long> countPerDay = accountExecutionMetadata.get().getAccountExecutionInfo().getCountPerDay();
-          if (countPerDay != null) {
-            if (countPerDay.getOrDefault(day, 0L) >= 5) {
-              log.error("Daily stage execution rate limit for free plan has reached for accountId {}", accountId);
-              throw new CIStageExecutionException(
-                  "Execution limit has reached for the day, Please reach out to Harness support");
-            }
-          }
-        }
-      }
+      // fetch current usage and limits
     }
   }
 }

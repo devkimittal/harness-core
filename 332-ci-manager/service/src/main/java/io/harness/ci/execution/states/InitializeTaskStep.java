@@ -151,6 +151,8 @@ public class InitializeTaskStep implements TaskExecutableWithRbac<StepElementPar
   @Inject private BackgroundTaskUtility backgroundTaskUtility;
   @Inject private CILicenseService ciLicenseService;
   @Inject CIAccountExecutionMetadataRepository accountExecutionMetadataRepository;
+  @Inject private CIStagePlanCreationUtils ciStagePlanCreationUtils;
+
   @Override
   public Class<StepElementParameters> getStepParametersClass() {
     return StepElementParameters.class;
@@ -252,7 +254,7 @@ public class InitializeTaskStep implements TaskExecutableWithRbac<StepElementPar
     InitializeStepInfo initializeStepInfo = (InitializeStepInfo) stepElementParameters.getSpec();
 
     String logPrefix = getLogPrefix(ambiance);
-    CIStagePlanCreationUtils.validateFreeAccountStageExecutionLimit(accountExecutionMetadataRepository,
+    ciStagePlanCreationUtils.validateFreeAccountStageExecutionLimit(accountExecutionMetadataRepository,
         ciLicenseService, AmbianceUtils.getAccountId(ambiance), initializeStepInfo.getInfrastructure());
 
     populateStrategyExpansion(initializeStepInfo, ambiance);

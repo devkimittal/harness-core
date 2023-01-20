@@ -7,6 +7,7 @@
 
 package io.harness.enforcement.client.services;
 
+import io.harness.enforcement.beans.FeatureRestrictionUsageDTO;
 import io.harness.enforcement.beans.metadata.RestrictionMetadataDTO;
 import io.harness.enforcement.constants.FeatureRestrictionName;
 import io.harness.enforcement.exceptions.EnforcementServiceConnectionException;
@@ -87,6 +88,9 @@ public interface EnforcementClientService {
       Set<FeatureRestrictionName> featureRestrictionNames, String accountIdentifier);
   Optional<RestrictionMetadataDTO> getRestrictionMetadata(FeatureRestrictionName featureRestrictionName,
       String accountIdentifier) throws WrongFeatureStateException, EnforcementServiceConnectionException;
+  Optional<FeatureRestrictionUsageDTO> getFeatureUsage(FeatureRestrictionName featureRestrictionName,
+      String accountIdentifier, RestrictionMetadataDTO restrictionMetadataDTO)
+      throws WrongFeatureStateException, EnforcementServiceConnectionException;
   Map<FeatureRestrictionName, RestrictionMetadataDTO> getRestrictionMetadataMap(
       List<FeatureRestrictionName> featureRestrictionNames, String accountIdentifier)
       throws WrongFeatureStateException, EnforcementServiceConnectionException;

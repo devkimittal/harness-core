@@ -169,6 +169,7 @@ public class InitializeTaskStepV2 extends CiAsyncExecutable {
   @Inject private Supplier<DelegateCallbackToken> delegateCallbackTokenSupplier;
   @Inject private HsqsServiceClient hsqsServiceClient;
   @Inject private CIExecutionServiceConfig ciExecutionServiceConfig;
+  @Inject private CIStagePlanCreationUtils ciStagePlanCreationUtils;
 
   @Inject SdkGraphVisualizationDataService sdkGraphVisualizationDataService;
   private static final String DEPENDENCY_OUTCOME = "dependencies";
@@ -227,7 +228,7 @@ public class InitializeTaskStepV2 extends CiAsyncExecutable {
     InitializeStepInfo initializeStepInfo = (InitializeStepInfo) stepParameters.getSpec();
 
     String logPrefix = getLogPrefix(ambiance);
-    CIStagePlanCreationUtils.validateFreeAccountStageExecutionLimit(accountExecutionMetadataRepository,
+    ciStagePlanCreationUtils.validateFreeAccountStageExecutionLimit(accountExecutionMetadataRepository,
         ciLicenseService, AmbianceUtils.getAccountId(ambiance), initializeStepInfo.getInfrastructure());
 
     populateStrategyExpansion(initializeStepInfo, ambiance);
