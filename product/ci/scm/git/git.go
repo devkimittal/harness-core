@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/github"
@@ -267,6 +268,13 @@ func GetLatestCommit(ctx context.Context, request *pb.GetLatestCommitRequest, lo
 	}
 
 	refResponse, response, err := client.Git.FindCommit(ctx, request.GetSlug(), ref)
+
+	// bitbucket onprem API doesn't return commit link, hence populating it manually.
+	if refResponse.Link == "" && request.GetProvider().GetBitbucketServer() != nil{
+	    namespace, name := scm.Split(request.GetSlug())
+	    refResponse.Link= fmt.Sprintf("%sprojects/%s/repos/%s/commits/%s", client.BaseURL, namespace, name, refResponse.Sha)
+	}
+
 	if err != nil {
 		log.Errorw("GetLatestCommit failure", "provider", gitclient.GetProvider(*request.GetProvider()), "slug", request.GetSlug(), "ref", ref, "elapsed_time_ms", utils.TimeSince(start), zap.Error(err))
 		// this is a hard error with no response
