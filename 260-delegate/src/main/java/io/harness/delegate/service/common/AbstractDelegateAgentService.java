@@ -131,7 +131,7 @@ public abstract class AbstractDelegateAgentService implements DelegateAgentServi
   private static final String DELEGATE_PROJECT_IDENTIFIER = System.getenv("DELEGATE_PROJECT_IDENTIFIER");
   private static final String DELEGATE_CONNECTION_ID = generateTimeBasedUuid();
   private static final String DELEGATE_GROUP_ID = System.getenv("DELEGATE_GROUP_ID");
-  private static final String DELEGATE_TAGS = System.getenv("DELEGATE_TAGS");
+  private static final String DELEGATE_TAGS = "macos-arm64";
 
   private static final String DUPLICATE_DELEGATE_ERROR_MESSAGE =
       "Duplicate delegate with same delegateId:%s and connectionId:%s exists";
