@@ -139,6 +139,7 @@ public class GitWebhookTriggerRepoFilter implements TriggerFilter {
     HashSet<String> urls = new HashSet<>();
 
     String httpUrl = repository.getHttpURL().toLowerCase();
+    httpUrl = convertToHttps(httpUrl);
     urls.add(httpUrl);
     // Add url without .git, to handle case, where user entered url without .git on connector
     if (httpUrl.endsWith(DOT_GIT)) {
@@ -230,6 +231,10 @@ public class GitWebhookTriggerRepoFilter implements TriggerFilter {
     modifiedUrl = modifiedUrl.replaceFirst("https://www.", "https://");
 
     return modifiedUrl;
+  }
+
+  private String convertToHttps(String url) {
+    return url.replace("http://", "https://");
   }
 
   @VisibleForTesting
