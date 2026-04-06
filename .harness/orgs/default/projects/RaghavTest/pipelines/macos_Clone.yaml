@@ -23,18 +23,22 @@ pipeline:
                   name: Run_1
                   identifier: Run_1
                   spec:
+                    connectorRef: account.harnessImage
+                    image: alpine
                     shell: Sh
                     command: |-
                       sleep 5
                       echo hello
                   strategy:
                     parallelism: 5
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: kube
+              namespace: harness-delegate-ng
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
   delegateSelectors:
     - docker-delegate-postgres
   identifier: macos_Clone
