@@ -38,7 +38,7 @@ pipeline:
   delegateSelectors:
     - docker-delegate-postgres
   identifier: macos_Clone
-  name: macos - Clone
+  name: macosremote
   properties:
     ci:
       codebase:
