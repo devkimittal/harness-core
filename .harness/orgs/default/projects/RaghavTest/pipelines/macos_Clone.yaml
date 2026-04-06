@@ -9,10 +9,11 @@ pipeline:
         description: ""
         type: CI
         spec:
-          cloneCodebase: false
+          cloneCodebase: true
           caching:
             enabled: true
             override: false
+            paths: []
           buildIntelligence:
             enabled: true
           execution:
@@ -38,3 +39,9 @@ pipeline:
     - docker-delegate-postgres
   identifier: macos_Clone
   name: macos - Clone
+  properties:
+    ci:
+      codebase:
+        connectorRef: dev_gitx
+        build: <+input>
+        sparseCheckout: []
