@@ -1,0 +1,40 @@
+pipeline:
+  tags: {}
+  projectIdentifier: RaghavTest
+  orgIdentifier: default
+  stages:
+    - stage:
+        name: linuxtest
+        identifier: linuxtest
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: false
+          caching:
+            enabled: true
+            override: false
+          buildIntelligence:
+            enabled: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    shell: Sh
+                    command: |-
+                      sleep 5
+                      echo hello
+                  strategy:
+                    parallelism: 5
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+  delegateSelectors:
+    - docker-delegate-postgres
+  identifier: macos_Clone
+  name: macos - Clone
