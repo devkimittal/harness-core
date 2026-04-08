@@ -36,6 +36,12 @@ pipeline:
             spec:
               connectorRef: kube
               namespace: harness-delegate-ng
+              volumes:
+                - mountPath: ggg
+                  type: PersistentVolumeClaim
+                  spec:
+                    claimName: ggg
+                    readOnly: true
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
