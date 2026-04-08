@@ -38,6 +38,12 @@ pipeline:
                 os: Linux
         delegateSelectors:
           - docker-delegate-aws
+        variables:
+          - name: HOME
+            type: String
+            description: ""
+            required: false
+            value: /root
   identifier: macos_Clone
   name: macosremote
   properties:
