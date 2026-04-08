@@ -29,22 +29,15 @@ pipeline:
                     command: |-
                       sleep 5
                       echo hello
-                  strategy:
-                    parallelism: 5
           infrastructure:
-            type: KubernetesDirect
+            type: VM
             spec:
-              connectorRef: kube
-              namespace: harness-delegate-ng
-              volumes:
-                - mountPath: ggg
-                  type: PersistentVolumeClaim
-                  spec:
-                    claimName: ggg
-                    readOnly: true
-              automountServiceAccountToken: true
-              nodeSelector: {}
-              os: Linux
+              type: Pool
+              spec:
+                poolName: linux-amd64
+                os: Linux
+        delegateSelectors:
+          - docker-delegate-aws
   identifier: macos_Clone
   name: macosremote
   properties:
