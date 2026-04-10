@@ -27,7 +27,7 @@ pipeline:
                     image: alpine
                     shell: Sh
                     command: |-
-                      sleep 5
+                      sleep 1010
                       echo hello
           infrastructure:
             type: VM
